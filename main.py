@@ -1,5 +1,5 @@
 import sys
-import pygame
+import pygame as pg
 from constants import *
 from player import Player
 from asteroid import Asteroid
@@ -8,14 +8,14 @@ from shot import Shot
 
 
 def main():
-    pygame.init
-    screen = pygame.display.set_mode(SCREEN_RES)
-    clock = pygame.time.Clock()
+    pg.init
+    screen = pg.display.set_mode(SCREEN_RES)
+    clock = pg.time.Clock()
 
-    updatable = pygame.sprite.Group()
-    drawable = pygame.sprite.Group()
-    asteroids = pygame.sprite.Group()
-    shots = pygame.sprite.Group()
+    updatable = pg.sprite.Group()
+    drawable = pg.sprite.Group()
+    asteroids = pg.sprite.Group()
+    shots = pg.sprite.Group()
 
     Asteroid.containers = (asteroids, updatable, drawable)
     Shot.containers = (shots, updatable, drawable)
@@ -29,12 +29,11 @@ def main():
     dt = 0
 
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
                 return
 
-        for obj in updatable:
-            obj.update(dt)
+        updatable.update(dt)
 
         for asteroid in asteroids:
             if asteroid.collides_with(player):
@@ -48,14 +47,12 @@ def main():
 
         screen.fill('black')
 
-        for obj in drawable:
-            obj.draw(screen)
+        drawable.draw(screen)
 
-        pygame.display.flip()
+        pg.display.flip()
 
         dt = clock.tick(60) / 1000
 
 
 if __name__ == '__main__':
     main()
-
