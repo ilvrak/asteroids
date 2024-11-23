@@ -1,58 +1,65 @@
 import sys
 import pygame as pg
 from constants import *
+from screenborders import ScreenBorders
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
 
 
-def main():
-    pg.init
-    screen = pg.display.set_mode(SCREEN_RES)
-    clock = pg.time.Clock()
+class Game:
+    def __init__(self):
+        pg.init
+        self.screen = pg.display.set_mode(SCREEN_RES)
+        self.clock = pg.time.Clock()
 
-    updatable = pg.sprite.Group()
-    drawable = pg.sprite.Group()
-    asteroids = pg.sprite.Group()
-    shots = pg.sprite.Group()
+        self.updatable = pg.sprite.Group()
+        self.drawable = pg.sprite.Group()
+        self.asteroids = pg.sprite.Group()
+        self.shots = pg.sprite.Group()
 
-    Asteroid.containers = (asteroids, updatable, drawable)
-    Shot.containers = (shots, updatable, drawable)
-    AsteroidField.containers = updatable
-    asteroid_field = AsteroidField()
-    
-    Player.containers = (updatable, drawable)
-    
-    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        Asteroid.containers = (self.asteroids, self.updatable, self.drawable)
+        Shot.containers = (self.shots, self.updatable, self.drawable)
+        AsteroidField.containers = self.updatable
+        self.asteroid_field = AsteroidField()
 
-    dt = 0
+        Player.containers = (self.updatable, self.drawable)
+        self.player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
-    while True:
+        self.running = True
+
+    def run(self):
+        while self.running:
+            dt = self.clock.tick(60) / 1000
+            self.handle_events()
+            self.update(dt)
+            self.draw()
+            pg.display.flip()
+
+    def handle_events(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                return
+                self.running = False
 
-        updatable.update(dt)
-
-        for asteroid in asteroids:
-            if asteroid.collides_with(player):
+    def update(self, dt):
+        self.updatable.update(dt)
+        for asteroid in self.asteroids:
+            if asteroid.collides_with(self.player):
                 print('Game over!')
                 sys.exit()
-            
-            for shot in shots:
+            for shot in self.shots:
                 if asteroid.collides_with(shot):
                     shot.kill()
                     asteroid.split()
 
-        screen.fill('black')
-
-        drawable.draw(screen)
-
+    def draw(self):
+        self.screen.fill('black')
+        for obj in self.drawable:
+            obj.draw(self.screen)
         pg.display.flip()
-
-        dt = clock.tick(60) / 1000
 
 
 if __name__ == '__main__':
-    main()
+    game = Game()
+    game.run()
