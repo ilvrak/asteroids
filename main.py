@@ -47,7 +47,8 @@ def main():
 
         screen.fill('black')
 
-        drawable.draw(screen)
+        for obj in drawable:
+            obj.draw(screen)
 
         pg.display.flip()
 
