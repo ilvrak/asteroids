@@ -47,7 +47,7 @@ class Game:
         self.updatable.update(dt)
         self.borders.check_bounds(self.player.position)
         for asteroid in self.asteroids:
-            if asteroid.collides_with(self.player):
+            if self.player.collides_with(asteroid):
                 print('Game over!')
                 sys.exit()
             for shot in self.shots:
